@@ -13,7 +13,7 @@ import os
                        # write_logfile=False, verbose=True, logger='bar')
 
 #sessionId = str(uuid.uuid1())
-#os.mkdir("C:\Kirill\Prog\djangofilesupload\StoredFiles\\" + sessionId)
+#os.mkdir("C:\Kirill\Prog\FilesuploadProject\StoredFiles\\" + sessionId)
 #import librosa as librosa
 #
 # from deep_translator import *

@@ -60,7 +60,7 @@ def upload_file(request):
 
 
         ds = Model(sttModelPath.__str__())
-        fin = wave.open(audioPath16k, "rb")
+        fin = wave.open(audioPath16k.__str__(), "rb")
         audio = np.frombuffer(fin.readframes(fin.getnframes()), np.int16)
         #jsondata = metadata_json_output(ds.sttWithMetadata(audio))
         textToTranslate = ds.stt(audio)
@@ -76,9 +76,9 @@ def upload_file(request):
         ttsModelPath = Rootpath.joinpath('models').joinpath('TTS').joinpath('checkpoint_260000.pth.tar')
         ttsConfigPath = Rootpath.joinpath('models').joinpath('TTS').joinpath('config123.json')
         ttsCliCommand = f'tts --text "{translatedText}" ' \
-                       f'--model_path {ttsModelPath} ' \
-                       f'--config_path {ttsConfigPath} ' \
-                       f'--out_path {synthedSpeechPath}'
+                       f'--model_path {ttsModelPath.__str__()} ' \
+                       f'--config_path {ttsConfigPath.__str__()} ' \
+                       f'--out_path {synthedSpeechPath.__str__()}'
 
         synthResponse = subprocess.call(ttsCliCommand, shell=True)  # 1 - error, 0 - ok
 
