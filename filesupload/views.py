@@ -12,7 +12,6 @@ import soundfile as sf
 import subprocess
 from deep_translator import GoogleTranslator
 import pathlib
-
 from client import *
 
 Rootpath = pathlib.Path().resolve()
@@ -26,29 +25,26 @@ def upload_file(request):
         # form = UploadFileForm(request.POST, request.FILES)
         #if form.is_valid():
         sessionId = str(uuid.uuid1())
-        os.mkdir("D:\\Proj\\Python\\MasterApp\\TTS\\StoredFiles\\" + sessionId)
+        SessionFolderPath = saveFolder.joinpath(sessionId)
+        os.mkdir(SessionFolderPath)
         FormFiles = request.FILES
-        folderPath = saveFolder + '\\' + sessionId + '\\'
+
 
         for fileName, value in FormFiles.items():
             fileToSaveName = value.name
-            saveFilePath = saveFolder + '/' + sessionId + '/' + fileToSaveName
+            saveFilePath = SessionFolderPath.joinpath(fileToSaveName)
             handle_uploaded_file(saveFilePath, value)
 
-            #if not os.listdir(filePath) and '.'.split(filesInDir[0])[1] != 'srt':
 
-
-        filesInDir = next(walk(folderPath), (None, None, []))[2]
-
+        filesInDir = next(walk(SessionFolderPath), (None, None, []))[2]
         videoFileName = list(filter(lambda x: x.split('.')[1] != 'srt', filesInDir))[0]
-
         audioName = videoFileName.split('.')[0] + '.wav'
         audioName16k = videoFileName.split('.')[0]+"16k" + '.wav'
 
-        audioPath = folderPath + audioName
-        audioPath16k = folderPath + audioName16k
+        audioPath = SessionFolderPath.joinpath(audioName)
+        audioPath16k = SessionFolderPath.joinpath(audioName16k)
 
-        videoPath = folderPath + videoFileName
+        videoPath = SessionFolderPath.joinpath(videoFileName).__str__()
 
         audioclip = AudioFileClip(videoPath)
         audioclip.write_audiofile(audioPath, fps=None, nbytes=2,
@@ -57,14 +53,13 @@ def upload_file(request):
                                   write_logfile=False, verbose=True, logger='bar')
 
 
-
         y, sr = librosa.load(audioPath)
         data = librosa.resample(y, sr, 16000)
         sf.write(audioPath16k, data, 16000)
 
 
 
-        ds = Model(sttModelPath)
+        ds = Model(sttModelPath.__str__())
         fin = wave.open(audioPath16k, "rb")
         audio = np.frombuffer(fin.readframes(fin.getnframes()), np.int16)
         #jsondata = metadata_json_output(ds.sttWithMetadata(audio))
@@ -77,9 +72,9 @@ def upload_file(request):
         translatedText = GoogleTranslator(source='auto', target='uk').translate(textToTranslate)
 
         synthedFileName = "synthed.wav"
-        synthedSpeechPath = folderPath + synthedFileName
-        ttsModelPath = "D:\\Proj\\Python\\MasterApp\\TTS\\models\\TTS\\checkpoint_260000.pth.tar"
-        ttsConfigPath = "D:\\Proj\\Python\\MasterApp\\TTS\\models\\TTS\\config123.json"
+        synthedSpeechPath = SessionFolderPath.joinpath(synthedFileName)
+        ttsModelPath = Rootpath.joinpath('models').joinpath('TTS').joinpath('checkpoint_260000.pth.tar')
+        ttsConfigPath = Rootpath.joinpath('models').joinpath('TTS').joinpath('config123.json')
         ttsCliCommand = f'tts --text "{translatedText}" ' \
                        f'--model_path {ttsModelPath} ' \
                        f'--config_path {ttsConfigPath} ' \

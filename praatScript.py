@@ -40,15 +40,4 @@ res = subprocess.call(f'praat --run "{scriptFileName}"', shell=True)  # 1 - erro
 if res == 1:
     raise ValueError('A very specific bad thing happened.')
 
-Read from file: "/content/masterFiles/orig.ogg"
-To Manipulation: 0.01, 75, 600
-Extract pitch tier
-Read from file: "/content/masterFiles/synthed.wav"
-To Manipulation: 0.01, 75, 600
-selectObject: "PitchTier orig"
-plusObject: "Manipulation synthed"
-Replace pitch tier
-selectObject: "Manipulation synthed"
-Get resynthesis (overlap-add)
-Save as WAV file: "/content/masterFiles/saved2.wav"
 
