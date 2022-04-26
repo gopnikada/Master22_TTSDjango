@@ -2,6 +2,8 @@ import os
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+
+import praatScript
 from .forms import UploadFileForm
 from django.views.decorators.csrf import ensure_csrf_cookie
 from moviepy.editor import *
@@ -81,7 +83,12 @@ def upload_file(request):
                        f'--config_path {ttsConfigPath.__str__()} ' \
                        f'--out_path {synthedSpeechPath.__str__()}'
 
+
         synthResponse = subprocess.call(ttsCliCommand, shell=True)  # 1 - error, 0 - ok
+
+        praatScript.generatePraatScriptText(SessionFolderPath, )
+
+        adjustedSynthResponse = subprocess.call(ttsCliCommand, shell=True)  # 1 - error, 0 - ok
 
         #todo praat
 
