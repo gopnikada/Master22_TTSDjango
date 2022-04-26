@@ -75,6 +75,7 @@ def upload_file(request):
         synthedSpeechPath = SessionFolderPath.joinpath(synthedFileName)
         ttsModelPath = Rootpath.joinpath('models').joinpath('TTS').joinpath('checkpoint_260000.pth.tar')
         ttsConfigPath = Rootpath.joinpath('models').joinpath('TTS').joinpath('config123.json')
+
         ttsCliCommand = f'tts --text "{translatedText}" ' \
                        f'--model_path {ttsModelPath.__str__()} ' \
                        f'--config_path {ttsConfigPath.__str__()} ' \
