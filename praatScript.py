@@ -28,7 +28,7 @@ def generatePraatScriptText(path, origFileName, synthFileName, exportName):
              f'Replace duration tier\n' \
              f'selectObject: "Manipulation {synthFileNameArr[0]}_int"\n' \
              f'Get resynthesis (overlap-add)\n' \
-             f'Save as WAV file: "{path}\\{exportName}.wav"\n'
+             f'Save as WAV file: "{path}\\{exportName}"\n'
     return scText
 
 

@@ -86,11 +86,21 @@ def upload_file(request):
 
         synthResponse = subprocess.call(ttsCliCommand, shell=True)  # 1 - error, 0 - ok
 
-        praatScript.generatePraatScriptText(SessionFolderPath, )
+        adjustedFileName = "adjusted.wav"
+        adjustedPath = SessionFolderPath.joinpath(adjustedFileName)
 
-        adjustedSynthResponse = subprocess.call(ttsCliCommand, shell=True)  # 1 - error, 0 - ok
+        praatScriptFileName = "praatScript.praat"
+        praatScriptPath = SessionFolderPath.joinpath(praatScriptFileName)
 
-        #todo praat
+        praatScriptText = praatScript.generatePraatScriptText(SessionFolderPath, audioPath16k,
+                                                              synthedSpeechPath, adjustedPath)
+        praatScript.createPraatFile(praatScriptText, praatScriptPath)
+
+        adjustedSynthResponse = subprocess.call(f'praat --run "{praatScriptPath}"', shell=True)  # 1 - error, 0 - ok
+
+        #todo praat per parts
+
+
 
 
         subTitlesdata = ""
