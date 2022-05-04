@@ -48,6 +48,10 @@ def upload_file(request):
 
         videoPath = SessionFolderPath.joinpath(videoFileName).__str__()
 
+        #todo clear
+        #res = subprocess.run(["ls"], capture_output=True)
+
+
         audioclip = AudioFileClip(videoPath)
         audioclip.write_audiofile(audioPath, fps=None, nbytes=2,
                                   buffersize=2000,
@@ -75,6 +79,7 @@ def upload_file(request):
 
         synthedFileName = "synthed.wav"
         synthedSpeechPath = SessionFolderPath.joinpath(synthedFileName)
+
         ttsModelPath = Rootpath.joinpath('models').joinpath('TTS').joinpath('checkpoint_260000.pth.tar')
         ttsConfigPath = Rootpath.joinpath('models').joinpath('TTS').joinpath('config123.json')
 
@@ -92,11 +97,11 @@ def upload_file(request):
         praatScriptFileName = "praatScript.praat"
         praatScriptPath = SessionFolderPath.joinpath(praatScriptFileName)
 
-        praatScriptText = praatScript.generatePraatScriptText(SessionFolderPath, audioPath16k,
-                                                              synthedSpeechPath, adjustedPath)
+        praatScriptText = praatScript.generatePraatScriptText(SessionFolderPath.__str__(), audioName16k,
+                                                              synthedFileName, adjustedFileName)
         praatScript.createPraatFile(praatScriptText, praatScriptPath)
 
-        adjustedSynthResponse = subprocess.call(f'praat --run "{praatScriptPath}"', shell=True)  # 1 - error, 0 - ok
+        adjustedSynthResponse = subprocess.call(f'D:\Proj\Python\MasterApp\TTS\Praat.exe --run "{praatScriptPath.__str__()}"', shell=True)  # 1 - error, 0 - ok
 
         #todo praat per parts
 
