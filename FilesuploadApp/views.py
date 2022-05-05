@@ -15,8 +15,8 @@ import subprocess
 from deep_translator import GoogleTranslator
 import pathlib
 from client import *
-import codecs
 from wsgiref.util import FileWrapper
+import pysrt
 
 Rootpath = pathlib.Path().resolve()
 
@@ -25,6 +25,8 @@ sttModelPath = Rootpath.joinpath('models').joinpath('STT').joinpath('model.tflit
 
 @ensure_csrf_cookie
 def upload_file(request):
+    # subs = pysrt.open('D:\\Proj\\Python\\MasterApp\\TTS\\subs.srt', encoding='utf-8')
+
     if request.method == 'POST':
         # form = UploadFileForm(request.POST, request.FILES)
         #if form.is_valid():
@@ -42,6 +44,8 @@ def upload_file(request):
 
         filesInDir = next(walk(SessionFolderPath), (None, None, []))[2]
         videoFileName = list(filter(lambda x: x.split('.')[1] != 'srt', filesInDir))[0]
+        subsFileName = list(filter(lambda x: x.split('.')[1] == 'srt', filesInDir))[0]
+        subsFilePath = SessionFolderPath.joinpath(subsFileName)
         audioName = videoFileName.split('.')[0] + '.wav'
         audioName16k = videoFileName.split('.')[0]+"16k" + '.wav'
 
@@ -71,10 +75,16 @@ def upload_file(request):
         fin = wave.open(audioPath16k.__str__(), "rb")
         audio = np.frombuffer(fin.readframes(fin.getnframes()), np.int16)
         #jsondata = metadata_json_output(ds.sttWithMetadata(audio))
-        textToTranslate = ds.stt(audio)
+        textToTranslate = ''
 
-        # if contains srt:
-        #     textToSynth = textFromSrt todo
+        #todo may be another criterium wheather subs there are
+        if filesInDir.count() == 2:
+            subs = pysrt.open(subsFilePath.__str__(), encoding='utf-8')
+            textToTranslate = subs.text.replace('\n', ' ')
+            for sub in subs.data:
+                print(sub)
+        else:
+            textToTranslate = ds.stt(audio)
 
 
         translatedText = GoogleTranslator(source='auto', target='uk').translate(textToTranslate)
@@ -134,6 +144,10 @@ def upload_file(request):
         file = FileWrapper(open(videoclip_adjustedFilePath, 'rb'))
         response = HttpResponse(file, content_type='video/mp4')
         response['Content-Disposition'] = f'attachment; filename={videoclip_adjustedFileName}'
+
+        # context = {'msg' : '<span style="color: green;">File successfully uploaded</span>'}
+        #
+        # render(request, "single.html", context)
         return response
 
 

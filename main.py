@@ -27,9 +27,20 @@ import os
 # print(sttModelPath)
 
 
-videoclip = VideoFileClip(videoPath)
-audioclip_adjusted = AudioFileClip(adjustedPath)
-videoclip_changed_audio = videoclip.set_audio(audioclip_adjusted)
+# videoclip = VideoFileClip(videoPath)
+# audioclip_adjusted = AudioFileClip(adjustedPath)
+# videoclip_changed_audio = videoclip.set_audio(audioclip_adjusted)
 
+import pysrt
+# from pysubparser import parser
+#
+# subtitles = parser.parse('./subs.srt')
+#
+# for subtitle in subtitles:
+#     print(subtitle)
+subs = pysrt.open('D:\\Proj\\Python\\MasterApp\\TTS\\subs.srt', encoding='utf-8')
+subsText = subs.text.replace('\n', ' ')
+for sub in subs.data:
+    print(sub)
 
 
