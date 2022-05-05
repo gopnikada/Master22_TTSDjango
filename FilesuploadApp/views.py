@@ -15,6 +15,8 @@ import subprocess
 from deep_translator import GoogleTranslator
 import pathlib
 from client import *
+import codecs
+from wsgiref.util import FileWrapper
 
 Rootpath = pathlib.Path().resolve()
 
@@ -109,6 +111,7 @@ def upload_file(request):
         #todo duration does not match
         #todo speechstart - speechstop
         #todo if subs synth at precise time pieces. else - use json from stt!
+        #todo decompise refactor
 
         videoclip = VideoFileClip(videoPath)
         audioclip_adjusted = AudioFileClip(adjusted_audioPath.__str__())
@@ -128,19 +131,9 @@ def upload_file(request):
 
         #tts.synth(textToSynth)
 
-
-        try:
-            with open(videoclip_adjustedFilePath, 'r', encoding="utf8") as f:
-                file_data = f.read()
-
-            # sending response
-            response = HttpResponse(file_data)
-            response['Content-Disposition'] = f'attachment; filename="{videoclip_adjustedFileName}"'
-
-        except IOError:
-            # handle file not exist case here
-            response = HttpResponseNotFound('<h1>File not exist</h1>')
-
+        file = FileWrapper(open(videoclip_adjustedFilePath, 'rb'))
+        response = HttpResponse(file, content_type='video/mp4')
+        response['Content-Disposition'] = f'attachment; filename={videoclip_adjustedFileName}'
         return response
 
 
