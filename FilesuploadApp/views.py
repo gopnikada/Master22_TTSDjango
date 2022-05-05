@@ -2,7 +2,7 @@ import os
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-
+from django.http import HttpResponse, HttpResponseNotFound
 import praatScript
 from .forms import UploadFileForm
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -91,33 +91,64 @@ def upload_file(request):
 
         synthResponse = subprocess.call(ttsCliCommand, shell=True)  # 1 - error, 0 - ok
 
-        adjustedFileName = "adjusted.wav"
-        adjustedPath = SessionFolderPath.joinpath(adjustedFileName)
+        adjusted_audioFileName = "adjusted.wav"
+        adjusted_audioPath = SessionFolderPath.joinpath(adjusted_audioFileName)
 
         praatScriptFileName = "praatScript.praat"
         praatScriptPath = SessionFolderPath.joinpath(praatScriptFileName)
 
         praatScriptText = praatScript.generatePraatScriptText(SessionFolderPath.__str__(), audioName16k,
-                                                              synthedFileName, adjustedFileName)
+                                                              synthedFileName, adjusted_audioFileName)
         praatScript.createPraatFile(praatScriptText, praatScriptPath)
 
-        adjustedSynthResponse = subprocess.call(f'D:\Proj\Python\MasterApp\TTS\Praat.exe --run "{praatScriptPath.__str__()}"', shell=True)  # 1 - error, 0 - ok
+        adjustedSynthResponse = subprocess.call(f'{Rootpath.joinpath("Praat.exe")} --run "{praatScriptPath.__str__()}"', shell=True)  # 1 - error, 0 - ok
 
+        # todo parse subs
         #todo praat per parts
+        #todo show double subs
+        #todo duration does not match
+        #todo speechstart - speechstop
+        #todo if subs synth at precise time pieces. else - use json from stt!
 
+        videoclip = VideoFileClip(videoPath)
+        audioclip_adjusted = AudioFileClip(adjusted_audioPath.__str__())
+        videoclip_changed_audio = videoclip.set_audio(audioclip_adjusted)
+
+        videoclip_adjustedFileName = "adj" + videoFileName
+        videoclip_adjustedFilePath = SessionFolderPath.joinpath(videoclip_adjustedFileName).__str__()
+
+        videoclip_changed_audio.write_videofile(videoclip_adjustedFilePath)
 
 
 
         subTitlesdata = ""
 
-        # if subTitlesdata: #todo
+        # if subTitlesdata:
         #     textToSynth = subTitlesdata
 
         #tts.synth(textToSynth)
 
-        context = {'msg' : '<span style="color: green;">File successfully uploaded</span>'}
 
-        return render(request, "single.html", context)
+        try:
+            with open(videoclip_adjustedFilePath, 'r', encoding="utf8") as f:
+                file_data = f.read()
+
+            # sending response
+            response = HttpResponse(file_data)
+            response['Content-Disposition'] = f'attachment; filename="{videoclip_adjustedFileName}"'
+
+        except IOError:
+            # handle file not exist case here
+            response = HttpResponseNotFound('<h1>File not exist</h1>')
+
+        return response
+
+
+
+
+        # context = {'msg' : '<span style="color: green;">File successfully uploaded</span>'}
+        #
+        # return render(request, "single.html", context)
     else:
         form = UploadFileForm()
     return render(request, 'single.html', {'form': form})
