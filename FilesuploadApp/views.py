@@ -76,10 +76,10 @@ def upload_file(request):
         audio = np.frombuffer(fin.readframes(fin.getnframes()), np.int16)
         #jsondata = metadata_json_output(ds.sttWithMetadata(audio))
         textToTranslate = ''
+        subs = pysrt.open(subsFilePath.__str__(), encoding='utf-8')
 
-        #todo may be another criterium wheather subs there are
-        if filesInDir.count() == 2:
-            subs = pysrt.open(subsFilePath.__str__(), encoding='utf-8')
+        if filesInDir.__len__() == 2:
+
             textToTranslate = subs.text.replace('\n', ' ')
             for sub in subs.data:
                 print(sub)
@@ -88,6 +88,8 @@ def upload_file(request):
 
 
         translatedText = GoogleTranslator(source='auto', target='uk').translate(textToTranslate)
+
+
 
         synthedFileName = "synthed.wav"
         synthedSpeechPath = SessionFolderPath.joinpath(synthedFileName)
