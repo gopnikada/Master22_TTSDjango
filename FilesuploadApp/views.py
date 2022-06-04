@@ -111,9 +111,12 @@ def upload_file(request):
         praatScriptFileName = "praatScript.praat"
         praatScriptPath = SessionFolderPath.joinpath(praatScriptFileName)
 
+        audioName16k = librosa.effects.trim(audioName16k, top_db=10)#remove silence
+        synthedFileName = librosa.effects.trim(synthedFileName, top_db=10)
         praatScriptText = praatScript.generatePraatScriptText(SessionFolderPath.__str__(), audioName16k,
                                                               synthedFileName, adjusted_audioFileName)
         praatScript.createPraatFile(praatScriptText, praatScriptPath)
+
 
         adjustedSynthResponse = subprocess.call(f'{Rootpath.joinpath("Praat.exe")} '
                     f'--run "{praatScriptPath.__str__()}"', shell=True)  # 1 - error, 0 - ok
