@@ -1,0 +1,16 @@
+{
+  "happy": {
+    "f0top": 35.6,
+    "f0bot": 24.5,
+    "f0mean": 37.2,
+    "dur": -2.4,
+    "energy": 3.3
+  },
+   "anger": {
+    "f0top": 32.5,
+    "f0bot": 17.7,
+    "f0mean": 23.3,
+    "dur": -9.4,
+    "energy": 2
+  }
+}

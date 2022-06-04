@@ -1,5 +1,4 @@
 import os
-
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound
@@ -25,8 +24,6 @@ sttModelPath = Rootpath.joinpath('models').joinpath('STT').joinpath('model.tflit
 
 @ensure_csrf_cookie
 def upload_file(request):
-    # subs = pysrt.open('D:\\Proj\\Python\\MasterApp\\TTS\\subs.srt', encoding='utf-8')
-
     if request.method == 'POST':
         # form = UploadFileForm(request.POST, request.FILES)
         #if form.is_valid():
@@ -74,7 +71,6 @@ def upload_file(request):
         ds = Model(sttModelPath.__str__())
         fin = wave.open(audioPath16k.__str__(), "rb")
         audio = np.frombuffer(fin.readframes(fin.getnframes()), np.int16)
-        #jsondata = metadata_json_output(ds.sttWithMetadata(audio))
         textToTranslate = ''
         subs = pysrt.open(subsFilePath.__str__(), encoding='utf-8')
 
@@ -86,16 +82,20 @@ def upload_file(request):
         else:
             textToTranslate = ds.stt(audio)
 
+        #todo match time
 
-        translatedText = GoogleTranslator(source='auto', target='uk').translate(textToTranslate)
+        translatedText = GoogleTranslator(source='auto', target='uk')\
+            .translate(textToTranslate)
 
 
 
         synthedFileName = "synthed.wav"
         synthedSpeechPath = SessionFolderPath.joinpath(synthedFileName)
 
-        ttsModelPath = Rootpath.joinpath('models').joinpath('TTS').joinpath('checkpoint_260000.pth.tar')
-        ttsConfigPath = Rootpath.joinpath('models').joinpath('TTS').joinpath('config123.json')
+        ttsModelPath = Rootpath.joinpath('models').joinpath('TTS')\
+            .joinpath('checkpoint_260000.pth.tar')
+        ttsConfigPath = Rootpath.joinpath('models').joinpath('TTS')\
+            .joinpath('config123.json')
 
         ttsCliCommand = f'tts --text "{translatedText}" ' \
                        f'--model_path {ttsModelPath.__str__()} ' \
@@ -115,7 +115,8 @@ def upload_file(request):
                                                               synthedFileName, adjusted_audioFileName)
         praatScript.createPraatFile(praatScriptText, praatScriptPath)
 
-        adjustedSynthResponse = subprocess.call(f'{Rootpath.joinpath("Praat.exe")} --run "{praatScriptPath.__str__()}"', shell=True)  # 1 - error, 0 - ok
+        adjustedSynthResponse = subprocess.call(f'{Rootpath.joinpath("Praat.exe")} '
+                    f'--run "{praatScriptPath.__str__()}"', shell=True)  # 1 - error, 0 - ok
 
         # todo parse subs
         #todo praat per parts
@@ -130,7 +131,8 @@ def upload_file(request):
         videoclip_changed_audio = videoclip.set_audio(audioclip_adjusted)
 
         videoclip_adjustedFileName = "adj" + videoFileName
-        videoclip_adjustedFilePath = SessionFolderPath.joinpath(videoclip_adjustedFileName).__str__()
+        videoclip_adjustedFilePath = SessionFolderPath.\
+            joinpath(videoclip_adjustedFileName).__str__()
 
         videoclip_changed_audio.write_videofile(videoclip_adjustedFilePath)
 
