@@ -181,9 +181,9 @@ def upload_file(request):
 
         #todo match time
 
-        translatedText = GoogleTranslator(source='auto', target='uk')\
-            .translate(textToTranslate)
-
+       # translatedText = GoogleTranslator(source='auto', target='uk')\
+        #    .translate(textToTranslate)
+        translatedText = "Я вже так стомився займатися цими справами, хлопче"
 
 
         synthedFileName = "synthed.wav"
@@ -215,7 +215,7 @@ def upload_file(request):
         NEGATIVE = "NEGATIVE"
         NEUTRAL = "NEUTRAL"
         #emo = predict(textToTranslate)[1]
-        emo=POSITIVE
+        emo=NEGATIVE
         praatScriptText = praatScript2.generatePraatScriptText(SessionFolderPath.__str__(), audioName16k,
                                                               synthedFileName, adjusted_audioFileName, emo)
         praatScript2.createPraatFile(praatScriptText, praatScriptPath)
