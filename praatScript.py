@@ -13,13 +13,7 @@ def generatePraatScriptText(path, origFileName, synthFileName, exportName):
              f'To Manipulation: 0.01, 75, 600\n' \
              f'selectObject: "PitchTier {origFileNameArr[0]}"\n' \
              f'plusObject: "Manipulation {synthFileNameArr[0]}"\n' \
-             f'Replace pitch tier\n' \
-             f'selectObject: "Manipulation {synthFileNameArr[0]}"\n' \
-             f'selectObject: "Manipulation {origFileNameArr[0]}"\n' \
-             f'Extract duration tier\n' \
-             f'selectObject: "Manipulation {synthFileNameArr[0]}"\n' \
-             f'plusObject: "DurationTier {origFileNameArr[0]}"\n' \
-             f'Replace duration tier\n' \
+             f'Replace pitch tier\n' \            
              f'selectObject: "Manipulation {synthFileNameArr[0]}"\n' \
              f'Get resynthesis (overlap-add)\n' \
              f'Save as WAV file: "{path}\\{exportName}"\n'
