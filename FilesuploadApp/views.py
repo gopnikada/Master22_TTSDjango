@@ -16,103 +16,103 @@ import pathlib
 from client import *
 from wsgiref.util import FileWrapper
 import pysrt
-from tensorflow import keras
-from keras.preprocessing.text import Tokenizer
-SEQUENCE_LENGTH = 300
-import time
-
-model = keras.models.load_model('/content/sentAnalys.h5')
-tokenizer = Tokenizer()
-POSITIVE = "POSITIVE"
-NEGATIVE = "NEGATIVE"
-NEUTRAL = "NEUTRAL"
-SENTIMENT_THRESHOLDS = (0.4, 0.7)
-def pad_sequences(sequences, maxlen=None, dtype='int32',
-                  padding='pre', truncating='pre', value=0.):
-
-  if not hasattr(sequences, '__len__'):
-    raise ValueError('`sequences` must be iterable.')
-  num_samples = len(sequences)
-
-  lengths = []
-  sample_shape = ()
-  flag = True
-
-  # take the sample shape from the first non empty sequence
-  # checking for consistency in the main loop below.
-
-  for x in sequences:
-    try:
-      lengths.append(len(x))
-      if flag and len(x):
-        sample_shape = np.asarray(x).shape[1:]
-        flag = False
-    except TypeError as e:
-      raise ValueError('`sequences` must be a list of iterables. '
-                       f'Found non-iterable: {str(x)}') from e
-
-  if maxlen is None:
-    maxlen = np.max(lengths)
-
-  is_dtype_str = np.issubdtype(dtype, np.str_) or np.issubdtype(
-      dtype, np.unicode_)
-  if isinstance(value, str) and dtype != object and not is_dtype_str:
-    raise ValueError(
-        f'`dtype` {dtype} is not compatible with `value`\'s type: '
-        f'{type(value)}\nYou should set `dtype=object` for variable length '
-        'strings.')
-
-  x = np.full((num_samples, maxlen) + sample_shape, value, dtype=dtype)
-  for idx, s in enumerate(sequences):
-    if not len(s):  # pylint: disable=g-explicit-length-test
-      continue  # empty list/array was found
-    if truncating == 'pre':
-      trunc = s[-maxlen:]  # pylint: disable=invalid-unary-operand-type
-    elif truncating == 'post':
-      trunc = s[:maxlen]
-    else:
-      raise ValueError(f'Truncating type "{truncating}" not understood')
-
-    # check `trunc` has expected shape
-    trunc = np.asarray(trunc, dtype=dtype)
-    if trunc.shape[1:] != sample_shape:
-      raise ValueError(f'Shape of sample {trunc.shape[1:]} of sequence at '
-                       f'position {idx} is different from expected shape '
-                       f'{sample_shape}')
-
-    if padding == 'post':
-      x[idx, :len(trunc)] = trunc
-    elif padding == 'pre':
-      x[idx, -len(trunc):] = trunc
-    else:
-      raise ValueError(f'Padding type "{padding}" not understood')
-  return x
-
-
-
-def decode_sentiment(score, include_neutral=True):
-    if include_neutral:
-        label = NEUTRAL
-        if score <= SENTIMENT_THRESHOLDS[0]:
-            label = NEGATIVE
-        elif score >= SENTIMENT_THRESHOLDS[1]:
-            label = POSITIVE
-
-        return label
-    else:
-        return NEGATIVE if score < 0.5 else POSITIVE
-
-def predict(text, include_neutral=True):
-    start_at = time.time()
-    # Tokenize text
-    x_test = pad_sequences(tokenizer.texts_to_sequences([text]), maxlen=SEQUENCE_LENGTH)
-    # Predict
-    score = model.predict([x_test])[0]
-    # Decode sentiment
-    label = decode_sentiment(score, include_neutral=include_neutral)
-
-    return {"label": label, "score": float(score),
-       "elapsed_time": time.time()-start_at}
+# import keras
+# from keras.preprocessing.text import Tokenizer
+# SEQUENCE_LENGTH = 300
+# import time
+#
+# model = keras.models.load_model('/content/sentAnalys.h5')
+# tokenizer = Tokenizer()
+# POSITIVE = "POSITIVE"
+# NEGATIVE = "NEGATIVE"
+# NEUTRAL = "NEUTRAL"
+# SENTIMENT_THRESHOLDS = (0.4, 0.7)
+# def pad_sequences(sequences, maxlen=None, dtype='int32',
+#                   padding='pre', truncating='pre', value=0.):
+#
+#   if not hasattr(sequences, '__len__'):
+#     raise ValueError('`sequences` must be iterable.')
+#   num_samples = len(sequences)
+#
+#   lengths = []
+#   sample_shape = ()
+#   flag = True
+#
+#   # take the sample shape from the first non empty sequence
+#   # checking for consistency in the main loop below.
+#
+#   for x in sequences:
+#     try:
+#       lengths.append(len(x))
+#       if flag and len(x):
+#         sample_shape = np.asarray(x).shape[1:]
+#         flag = False
+#     except TypeError as e:
+#       raise ValueError('`sequences` must be a list of iterables. '
+#                        f'Found non-iterable: {str(x)}') from e
+#
+#   if maxlen is None:
+#     maxlen = np.max(lengths)
+#
+#   is_dtype_str = np.issubdtype(dtype, np.str_) or np.issubdtype(
+#       dtype, np.unicode_)
+#   if isinstance(value, str) and dtype != object and not is_dtype_str:
+#     raise ValueError(
+#         f'`dtype` {dtype} is not compatible with `value`\'s type: '
+#         f'{type(value)}\nYou should set `dtype=object` for variable length '
+#         'strings.')
+#
+#   x = np.full((num_samples, maxlen) + sample_shape, value, dtype=dtype)
+#   for idx, s in enumerate(sequences):
+#     if not len(s):  # pylint: disable=g-explicit-length-test
+#       continue  # empty list/array was found
+#     if truncating == 'pre':
+#       trunc = s[-maxlen:]  # pylint: disable=invalid-unary-operand-type
+#     elif truncating == 'post':
+#       trunc = s[:maxlen]
+#     else:
+#       raise ValueError(f'Truncating type "{truncating}" not understood')
+#
+#     # check `trunc` has expected shape
+#     trunc = np.asarray(trunc, dtype=dtype)
+#     if trunc.shape[1:] != sample_shape:
+#       raise ValueError(f'Shape of sample {trunc.shape[1:]} of sequence at '
+#                        f'position {idx} is different from expected shape '
+#                        f'{sample_shape}')
+#
+#     if padding == 'post':
+#       x[idx, :len(trunc)] = trunc
+#     elif padding == 'pre':
+#       x[idx, -len(trunc):] = trunc
+#     else:
+#       raise ValueError(f'Padding type "{padding}" not understood')
+#   return x
+#
+#
+#
+# def decode_sentiment(score, include_neutral=True):
+#     if include_neutral:
+#         label = NEUTRAL
+#         if score <= SENTIMENT_THRESHOLDS[0]:
+#             label = NEGATIVE
+#         elif score >= SENTIMENT_THRESHOLDS[1]:
+#             label = POSITIVE
+#
+#         return label
+#     else:
+#         return NEGATIVE if score < 0.5 else POSITIVE
+#
+# def predict(text, include_neutral=True):
+#     start_at = time.time()
+#     # Tokenize text
+#     x_test = pad_sequences(tokenizer.texts_to_sequences([text]), maxlen=SEQUENCE_LENGTH)
+#     # Predict
+#     score = model.predict([x_test])[0]
+#     # Decode sentiment
+#     label = decode_sentiment(score, include_neutral=include_neutral)
+#
+#     return {"label": label, "score": float(score),
+#        "elapsed_time": time.time()-start_at}
 
 Rootpath = pathlib.Path().resolve()
 
@@ -208,17 +208,21 @@ def upload_file(request):
         praatScriptFileName = "praatScript.praat"
         praatScriptPath = SessionFolderPath.joinpath(praatScriptFileName)
 
-        audioName16k = librosa.effects.trim(audioName16k, top_db=10)#remove silence
-        synthedFileName = librosa.effects.trim(synthedFileName, top_db=10)
+        # audioPath16k = librosa.effects.trim(audioPath16k, top_db=10)#remove silence
+        # synthedFileName = librosa.effects.trim(synthedFileName, top_db=10)
 
-        emo = predict(textToTranslate)[1]
+        POSITIVE = "POSITIVE"
+        NEGATIVE = "NEGATIVE"
+        NEUTRAL = "NEUTRAL"
+        #emo = predict(textToTranslate)[1]
+        emo=POSITIVE
         praatScriptText = praatScript2.generatePraatScriptText(SessionFolderPath.__str__(), audioName16k,
                                                               synthedFileName, adjusted_audioFileName, emo)
         praatScript2.createPraatFile(praatScriptText, praatScriptPath)
 
+        praatScriptRun = f'{Rootpath.joinpath("Praat.exe")} --run "{praatScriptPath.__str__()}"'
 
-        adjustedSynthResponse = subprocess.call(f'{Rootpath.joinpath("Praat.exe")} '
-                    f'--run "{praatScriptPath.__str__()}"', shell=True)  # 1 - error, 0 - ok
+        adjustedSynthResponse = subprocess.call(praatScriptRun, shell=True)  # 1 - error, 0 - ok
 
         # todo parse subs
         #todo praat per parts

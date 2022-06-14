@@ -9,13 +9,14 @@ def generatePraatScriptText(path, origFileName, synthFileName, exportName, emo):
                   f'To Manipulation: 0.01, 75, 600\n' \
                   f'Read from file: "D:\\Proj\\Python\\MasterApp\\TTS\\refs\\happyref1.PitchTier"\n' \
                   f'selectObject: "Manipulation {synthFileNameArr[0]}"\n' \
-                  f'plusObject: "PitchTier angryref1"\n' \
+                  f'plusObject: "PitchTier happyref1"\n' \
                   f'Replace pitch tier\n' \
                   f'selectObject: "Manipulation {synthFileNameArr[0]}"\n' \
              f'Get resynthesis (overlap-add)\n' \
-                 f'selectObject: "IntensityTier D:\\Proj\\Python\\MasterApp\\TTS\\refs\\happyref1.IntensityTier"\n' \
-                 f'plusObject: "Sound {origFileNameArr[0]}"\n' \
-                 f'selectObject: "Sound {origFileNameArr[0]}"\n' \
+                 f'Read from file: "D:\\Proj\\Python\\MasterApp\\TTS\\refs\\happyref1.IntensityTier"\n' \
+                 f'selectObject: "IntensityTier happyref1"\n' \
+                 f'plusObject: "Sound {synthFileNameArr[0]}"\n' \
+                 f'selectObject: "Sound {synthFileNameArr[0]}"\n' \
              f'Save as WAV file: "{path}\\{exportName}"\n'
 
     scTextAngry = f'Read from file: "{path}\\{synthFileNameArr[0]}.{synthFileNameArr[1]}"\n' \

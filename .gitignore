@@ -2,6 +2,7 @@
 models
 models/TTS
 models/STT
+models/sentAnalys.h5
 venv
 StoredFiles/
 __pycache__/
