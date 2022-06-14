@@ -27,12 +27,11 @@ def generatePraatScriptText(path, origFileName, synthFileName, exportName, emo):
                   f'selectObject: "Manipulation {synthFileNameArr[0]}"\n' \
              f'Get resynthesis (overlap-add)\n' \
              f'Save as WAV file: "{path}\\{exportName}"\n'
-    if(emo=='happy'):
+    if(emo=='POSITIVE' or emo=='NEUTRAL'):
         return scTextHapy
-    elif(emo=='angry'):
-        return scTextAngry
     else:
-        return
+        return scTextAngry
+
 
 
 
