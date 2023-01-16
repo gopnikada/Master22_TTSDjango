@@ -1,7 +1,7 @@
 # Voice-over speech TTS!
 
 Demo repo from Master Thesis got at Summer '22.
- Paper: (UA) "paper.pdf"  
+ Paper: (UA) ![https://github.com/gopnikada/Master22_TTSDjango/blob/master/paper.pdf]  
 
 
 # Overview
